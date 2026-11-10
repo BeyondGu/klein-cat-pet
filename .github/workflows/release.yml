@@ -24,16 +24,29 @@ jobs:
           node --check lib/client.js
           node tests/smoke.mjs
 
+      - name: 校验 tag 与 package.json 版本一致
+        run: |
+          set -euo pipefail
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          echo "tag=$TAG_VERSION  package.json=$PKG_VERSION"
+          if [ "$PKG_VERSION" != "$TAG_VERSION" ]; then
+            echo "::error::tag ${GITHUB_REF_NAME} 与 package.json 的 version ${PKG_VERSION} 不一致，先统一再打 tag"
+            exit 1
+          fi
+
       - name: 打包插件分发包
         run: |
           set -euo pipefail
           NAME=$(node -p "require('./package.json').name")
-          VERSION=${GITHUB_REF_NAME#v}
+          VERSION="${GITHUB_REF_NAME#v}"
           ZIP_NAME="${NAME}-${VERSION}.zip"
+          mkdir -p dist
           zip -r "dist/${ZIP_NAME}" \
             lib cordis.patch.yml package.json README.md LICENSE CHANGELOG.md \
             -x "*.DS_Store"
           echo "ZIP_NAME=${ZIP_NAME}" >> "$GITHUB_ENV"
+          unzip -l "dist/${ZIP_NAME}"
 
       - name: 创建 GitHub Release
         uses: softprops/action-gh-release@v2
