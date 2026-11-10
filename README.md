@@ -4,6 +4,8 @@
 
 > 需要先安装 **DSH 桌面客户端（DeepSeek Harness）**。本项目是它的界面插件，不是独立程序，脱离 DSH 无法单独运行。
 
+> **安装（DSH Desktop）**：设置 → 插件 → 填 `github:BeyondGu/klein-cat-pet#v0.1.2`；或下载 [v0.1.2 .tgz](https://github.com/BeyondGu/klein-cat-pet/releases/download/v0.1.2/dsh-klein-cat-pet-0.1.2.tgz)。
+
 ![三态动效预览](docs/preview.gif)
 
 <sub>动图由 `tools/gif/` 从同一份 `lib/client.js` 逐帧渲染生成（非录屏）：336×425（实机 168×220 画面宽度的 2 倍）、20fps、三态各 0.9 秒一轮。静态图见 [docs/preview.png](docs/preview.png)。</sub>
@@ -36,16 +38,16 @@
 ### 方式一 · DSH Desktop 插件页（推荐）
 
 1. 打开 DSH Desktop → **设置 → 插件**。
-2. 有仓库访问权限时，在安装框填：
+2. 在安装框填：
 
 ```text
 github:BeyondGu/klein-cat-pet#v0.1.2
 ```
 
-3. 没有 Git / 不想登录时，从 [最新 Release](https://github.com/BeyondGu/klein-cat-pet/releases/latest) 下载 `dsh-klein-cat-pet-0.1.2.tgz`；如果插件页支持本地文件/路径，直接选它安装，否则用下面的手动兜底。
+3. 不想用 Git 时，从 [最新 Release](https://github.com/BeyondGu/klein-cat-pet/releases/latest) 下载 `dsh-klein-cat-pet-0.1.2.tgz`；如果插件页支持本地文件/路径，直接选它安装，否则用下面的手动兜底。
 4. 装好后刷新页面（`Ctrl+R`）；界面右下角出现猫，侧边栏底部出现猫爪按钮。
 
-> **仓库目前是私有的**：匿名打开 Release 会 404，`github:` 安装和 Release 下载都需要有权限的 GitHub 账号。给朋友用最稳的是直接把 `.tgz` 发给对方，让对方在插件页安装本地文件。要公开下载，需要先把仓库设为 Public。
+> 仓库已公开：上面的 `github:` 规格和 Release 下载对所有 GitHub 用户生效；直接把 `.tgz` 发给朋友也可以。
 
 > `desktop` profile 由 DSH 桌面应用独占管理，`dsh plugin --profile desktop ...` 会被拒绝；桌面端只走应用内插件页。
 
@@ -55,7 +57,7 @@ github:BeyondGu/klein-cat-pet#v0.1.2
 # 本地 tarball（推荐）
 & "<DSH 安装目录>\resources\runtime\cli\bin\dsh.cmd" plugin --profile <profile> add "<dsh-klein-cat-pet-0.1.2.tgz 的绝对路径>"
 
-# 或有仓库权限时直接装 git 源
+# 或直接装 git 源
 & "<DSH 安装目录>\resources\runtime\cli\bin\dsh.cmd" plugin --profile <profile> add "github:BeyondGu/klein-cat-pet#v0.1.2"
 ```
 
@@ -97,7 +99,7 @@ klein-cat-pet/
 ├─ docs/preview.gif       # 三态动效预览（README 首图）
 ├─ .github/workflows/
 │  ├─ ci.yml              # push / PR 跑语法检查 + 冒烟 + 预览页
-│  └─ release.yml         # 打 v* tag 自动出 Release 与分发 zip
+│  └─ release.yml         # 打 v* tag 自动出 Release（zip + tgz）
 ├─ CHANGELOG.md           # 版本变更记录（Keep a Changelog）
 └─ LICENSE                # MIT（仅覆盖代码）
 ```
@@ -169,7 +171,6 @@ python tools/gif/make_gif.py art.json docs/preview.gif
 3. 这是 DSH 界面内的宠物，不是盖在其他软件上的系统桌面悬浮窗。
 4. 位置/静音存在 `localStorage`；如果桌面端每次启动换端口（换 origin），这些偏好会重置。要跨重启保留，需要给宿主半加本地设置文件（v2）。
 5. 兼容 DSH `0.2.2-rc.1` 的客户端槽位契约；升级 DSH 后若槽位变化需要回归。
-6. 仓库当前为私有：匿名打开 Release 是 404，`github:` 直装和 Release 下载都需要有权限的账号；公开下载需先把仓库设为 Public。给朋友用可以直接发 `.tgz`。
 
 ## 声明
 
