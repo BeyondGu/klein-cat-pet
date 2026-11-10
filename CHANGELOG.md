@@ -3,6 +3,23 @@
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，
 版本号遵循 [SemVer](https://semver.org/lang/zh-CN/)。
 
+## [0.1.2] - 2026-11-10
+
+### 新增
+
+- Release 同时提供 `.tgz`（`npm pack`）：DSH 插件页可以直接安装本地 tarball，不再依赖“解压后复制到 node_modules”。
+- `docs/preview.gif`、`docs/preview.png` 与 `tests/` 纳入分发包：安装后的 README 图片可离线显示，`npm test` 也能在解压后的目录里运行。
+
+### 变更
+
+- 重写安装/更新说明：DSH Desktop 走 **设置 → 插件**（`github:` 规格或本地 `.tgz`）；移除缺少 `dsh.profile.bundles` 注册的旧复制步骤。
+- README 首图改回相对路径，仓库页和分发包里都能显示。
+- 发布工作流改为同时上传 zip 与 tgz，并校验 tarball 内包含 `package/lib/client.js`、`package/cordis.patch.yml`。
+
+### 修复
+
+- 修复单独下载分发包时 README 图片断链、以及按旧说明手复制后插件不显示的问题。
+
 ## [0.1.1] - 2026-11-10
 
 ### 新增

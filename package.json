@@ -1,6 +1,6 @@
 {
   "name": "dsh-klein-cat-pet",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "克莱恩猫 —— DSH 网页端三状态动态宠物：黄水晶占卜 / 打瞌睡 / 喝甜冰茶",
   "type": "module",
   "main": "lib/index.js",
@@ -14,7 +14,11 @@
     "cordis.patch.yml",
     "README.md",
     "LICENSE",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "docs/preview.gif",
+    "docs/preview.png",
+    "tests/",
+    "tools/preview.mjs"
   ],
   "scripts": {
     "check": "node --check lib/client.js",

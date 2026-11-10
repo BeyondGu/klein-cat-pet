@@ -4,9 +4,9 @@
 
 > 需要先安装 **DSH 桌面客户端（DeepSeek Harness）**。本项目是它的界面插件，不是独立程序，脱离 DSH 无法单独运行。
 
-![三态动效预览](https://github.com/BeyondGu/klein-cat-pet/raw/main/docs/preview.gif)
+![三态动效预览](docs/preview.gif)
 
-<sub>动图由 `tools/gif/` 从同一份 `lib/client.js` 逐帧渲染生成（非录屏）：336×425（实机 168×220 画面宽度的 2 倍）、20fps、三态各 0.9 秒一轮。静态图见 [docs/preview.png](https://github.com/BeyondGu/klein-cat-pet/raw/main/docs/preview.png)。</sub>
+<sub>动图由 `tools/gif/` 从同一份 `lib/client.js` 逐帧渲染生成（非录屏）：336×425（实机 168×220 画面宽度的 2 倍）、20fps、三态各 0.9 秒一轮。静态图见 [docs/preview.png](docs/preview.png)。</sub>
 
 > 粉丝向二创：礼帽、黄水晶、灰雾、甜冰茶等元素均为本项目手绘 SVG，不使用官方立绘。个人使用可以，公开发布/上架前请自行评估 IP 风险。
 
@@ -31,32 +31,45 @@
 
 ## 安装
 
-本项目是标准的 DSH 客户端插件包：不需要 `npm install`，也没有构建步骤，下载下来就能用。
+本项目是标准的 DSH 客户端插件包：没有构建步骤。**不要手动复制到 `node_modules`**——那只把文件放进去，不会把包加入 `dsh.profile.bundles`，界面不会出现猫。
 
-### 方式一 · 下载 Release 包（不需要 Git）
+### 方式一 · DSH Desktop 插件页（推荐）
 
-1. 打开 [最新 Release](https://github.com/BeyondGu/klein-cat-pet/releases/latest)，下载 `dsh-klein-cat-pet-X.Y.Z.zip`。
-2. 解压，得到一个 `dsh-klein-cat-pet` 文件夹（里面是 `lib/`、`package.json`、`cordis.patch.yml` 等）。
-3. 把**整个文件夹**放到 profile 的 `node_modules` 下：
+1. 打开 DSH Desktop → **设置 → 插件**。
+2. 有仓库访问权限时，在安装框填：
 
 ```text
-%USERPROFILE%\.dsh\profiles\<profile>\node_modules\dsh-klein-cat-pet
+github:BeyondGu/klein-cat-pet#v0.1.2
 ```
 
-4. 重启 DSH 客户端（或刷新页面 `Ctrl+R`）。
+3. 没有 Git / 不想登录时，从 [最新 Release](https://github.com/BeyondGu/klein-cat-pet/releases/latest) 下载 `dsh-klein-cat-pet-0.1.2.tgz`；如果插件页支持本地文件/路径，直接选它安装，否则用下面的手动兜底。
+4. 装好后刷新页面（`Ctrl+R`）；界面右下角出现猫，侧边栏底部出现猫爪按钮。
 
-> `<profile>` 是你在 DSH 里用的那个 profile 目录名；打开 `%USERPROFILE%\.dsh\profiles\` 就能看到有哪些。
+> **仓库目前是私有的**：匿名打开 Release 会 404，`github:` 安装和 Release 下载都需要有权限的 GitHub 账号。给朋友用最稳的是直接把 `.tgz` 发给对方，让对方在插件页安装本地文件。要公开下载，需要先把仓库设为 Public。
 
-### 方式二 · git clone + 插件命令
+> `desktop` profile 由 DSH 桌面应用独占管理，`dsh plugin --profile desktop ...` 会被拒绝；桌面端只走应用内插件页。
+
+### 方式二 · 非 desktop profile / CLI
 
 ```powershell
-git clone https://github.com/BeyondGu/klein-cat-pet.git
-& "<DSH 安装目录>\resources\runtime\cli\bin\dsh.cmd" plugin --profile <profile> add "<克隆下来的仓库目录>"
+# 本地 tarball（推荐）
+& "<DSH 安装目录>\resources\runtime\cli\bin\dsh.cmd" plugin --profile <profile> add "<dsh-klein-cat-pet-0.1.2.tgz 的绝对路径>"
+
+# 或有仓库权限时直接装 git 源
+& "<DSH 安装目录>\resources\runtime\cli\bin\dsh.cmd" plugin --profile <profile> add "github:BeyondGu/klein-cat-pet#v0.1.2"
 ```
 
-两种方式效果相同，任选一条。装好后：界面右下角出现猫，侧边栏底部出现一个猫爪按钮；宿主侧只插入一个空实现的 loader 行，宠物全部在浏览器端渲染。
+> `<profile>` 是 `%USERPROFILE%\.dsh\profiles\` 下的目录名；`desktop` 不适用 CLI。
 
-> `desktop` profile 由 DSH 桌面应用独占管理，`dsh plugin --profile desktop ...` 会被拒绝；桌面端请在应用内的 **设置 → 插件** 里安装/卸载。上面的 CLI 只适用于非 desktop 的 profile。
+### 手动兜底（不推荐）
+
+如果插件页不接受本地路径：解压 `.tgz`/`.zip`，把包目录放在 profile 的 `node_modules\dsh-klein-cat-pet`，**同时把 `dsh-klein-cat-pet` 加进 profile `package.json` 的 `dsh.profile.bundles`**。桌面端可能被应用覆盖，优先用插件页。
+
+## 更新
+
+- 插件页安装新版本即可；如果仍显示旧版本，先移除再安装，或刷新/重启 DSH。
+- 当前这台机器是 `link:` 开发安装：更新工作区文件后刷新页面即可，不需要重新下载。
+- Release 现在同时提供 `.zip`（手动解压）和 `.tgz`（插件页/CLI 安装）；优先用 `.tgz`。
 
 ## 卸载
 
@@ -123,9 +136,9 @@ python tools/gif/make_gif.py art.json docs/preview.gif
 
 ## 版本与发布
 
-- 版本号遵循 SemVer：`0.1.1` 修 bug，`0.2.0` 加功能，`1.0.0` 槽位契约稳定。
-- 发布流程：更新 `CHANGELOG.md` → 改 `package.json` 的 `version` → `git tag vX.Y.Z` 并推送 → `release.yml` 自动生成 Release 和 `dsh-klein-cat-pet-X.Y.Z.zip`。
-- 分发包内容由 `package.json` 的 `files` 白名单控制，测试与预览产物不会被打进包里。
+- 版本号遵循 SemVer：`0.1.2` 修发行/文档，`0.2.0` 加功能，`1.0.0` 槽位契约稳定。
+- 发布流程：更新 `CHANGELOG.md` → 改 `package.json` 的 `version` → `git tag vX.Y.Z` 并推送 → `release.yml` 自动生成 Release，同时上传 `dsh-klein-cat-pet-X.Y.Z.zip` 和 `.tgz`。
+- 分发包内容由 `package.json` 的 `files` 白名单控制；`docs/` 预览图和 `tests/` 会进包，`tools/preview.html` 等开发产物不会。
 - 若将来要发布到 npm，直接 `npm publish` 即可（`files` 已配好）；不打算发布则把 `package.json` 里 `private` 设为 `true` 以防误发。
 
 ## 实现要点
@@ -156,6 +169,7 @@ python tools/gif/make_gif.py art.json docs/preview.gif
 3. 这是 DSH 界面内的宠物，不是盖在其他软件上的系统桌面悬浮窗。
 4. 位置/静音存在 `localStorage`；如果桌面端每次启动换端口（换 origin），这些偏好会重置。要跨重启保留，需要给宿主半加本地设置文件（v2）。
 5. 兼容 DSH `0.2.2-rc.1` 的客户端槽位契约；升级 DSH 后若槽位变化需要回归。
+6. 仓库当前为私有：匿名打开 Release 是 404，`github:` 直装和 Release 下载都需要有权限的账号；公开下载需先把仓库设为 Public。给朋友用可以直接发 `.tgz`。
 
 ## 声明
 

@@ -5,6 +5,9 @@ node_modules/
 # 预览页产物（由 tools/preview.mjs 生成，不入库）
 tools/preview.html
 
+# 发布产物（由 release.yml / pnpm pack 生成，不入库）
+dist/
+
 # 动图脚本的中间产物
 art.json
 

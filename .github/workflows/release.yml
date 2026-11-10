@@ -35,7 +35,7 @@ jobs:
             exit 1
           fi
 
-      - name: 打包插件分发包
+      - name: 打包插件分发包（zip + npm tarball）
         run: |
           set -euo pipefail
           NAME=$(node -p "require('./package.json').name")
@@ -44,14 +44,25 @@ jobs:
           mkdir -p dist
           zip -r "dist/${ZIP_NAME}" \
             lib cordis.patch.yml package.json README.md LICENSE CHANGELOG.md \
+            docs/preview.gif docs/preview.png tests \
+            tools/preview.mjs \
             -x "*.DS_Store"
+          npm pack --pack-destination dist
+          TGZ=$(ls dist/*.tgz)
           echo "ZIP_NAME=${ZIP_NAME}" >> "$GITHUB_ENV"
+          echo "TGZ_NAME=$(basename "$TGZ")" >> "$GITHUB_ENV"
           unzip -l "dist/${ZIP_NAME}"
+          tar -tzf "$TGZ" | sort
+          tar -tzf "$TGZ" | grep -qx 'package/lib/client.js'
+          tar -tzf "$TGZ" | grep -qx 'package/cordis.patch.yml'
+          tar -tzf "$TGZ" | grep -qx 'package/package.json'
 
       - name: 创建 GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/*.zip
+          files: |
+            dist/*.zip
+            dist/*.tgz
           generate_release_notes: true
           draft: false
           prerelease: false

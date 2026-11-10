@@ -29,6 +29,9 @@ jobs:
       - name: 生成三态预览页
         run: node tools/preview.mjs
 
+      - name: 检查 npm 分发包内容
+        run: npm pack --dry-run
+
       - name: 上传预览页产物
         uses: actions/upload-artifact@v4
         with:
