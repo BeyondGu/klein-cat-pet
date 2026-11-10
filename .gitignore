@@ -1,0 +1,25 @@
+# 依赖与 DSH 本地安装痕迹
+node_modules/
+.dsh/
+
+# 预览页产物（由 tools/preview.mjs 生成，不入库）
+tools/preview.html
+
+# 系统与编辑器
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# 日志与临时文件
+*.log
+npm-debug.log*
+*.tmp
+*.bak
+
+# 环境变量（如需接入本地密钥）
+.env
+.env.*
+!.env.example

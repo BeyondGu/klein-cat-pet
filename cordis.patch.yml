@@ -1,0 +1,6 @@
+# 克莱恩猫宠物插件的 loader 补丁层。
+# 这一行让 DSH 在启动/热重载时解析本包，并把它的 client bundle
+# 加入浏览器端的模块图；宠物本身完全由 lib/client.js 渲染。
+- insert:
+    - id: klein-cat-pet
+      name: dsh-klein-cat-pet

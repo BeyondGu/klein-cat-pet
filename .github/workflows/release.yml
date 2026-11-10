@@ -1,0 +1,44 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: 打包并发布
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: 发布前校验
+        run: |
+          node --check lib/client.js
+          node tests/smoke.mjs
+
+      - name: 打包插件分发包
+        run: |
+          set -euo pipefail
+          NAME=$(node -p "require('./package.json').name")
+          VERSION=${GITHUB_REF_NAME#v}
+          ZIP_NAME="${NAME}-${VERSION}.zip"
+          zip -r "dist/${ZIP_NAME}" \
+            lib cordis.patch.yml package.json README.md LICENSE CHANGELOG.md \
+            -x "*.DS_Store"
+          echo "ZIP_NAME=${ZIP_NAME}" >> "$GITHUB_ENV"
+
+      - name: 创建 GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.zip
+          generate_release_notes: true
+          draft: false
+          prerelease: false

@@ -1,0 +1,56 @@
+{
+  "name": "dsh-klein-cat-pet",
+  "version": "0.1.0",
+  "description": "克莱恩猫 —— DSH 网页端三状态动态宠物：黄水晶占卜 / 打瞌睡 / 喝甜冰茶",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "check": "node --check lib/client.js",
+    "test": "node tests/smoke.mjs",
+    "preview": "node tools/preview.mjs",
+    "verify": "npm run check && npm test"
+  },
+  "keywords": [
+    "dsh-plugin",
+    "deepseek-harness",
+    "desktop-pet",
+    "cordis",
+    "svg-animation"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BeyondGu/klein-cat-pet.git"
+  },
+  "homepage": "https://github.com/BeyondGu/klein-cat-pet#readme",
+  "bugs": {
+    "url": "https://github.com/BeyondGu/klein-cat-pet/issues"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/dsh": "^0.2.0"
+  },
+  "dsh": {
+    "manifestVersion": 1,
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web"
+    }
+  }
+}
