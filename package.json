@@ -1,6 +1,6 @@
 {
   "name": "dsh-klein-cat-pet",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "克莱恩猫 —— DSH 网页端三状态动态宠物：黄水晶占卜 / 打瞌睡 / 喝甜冰茶",
   "type": "module",
   "main": "lib/index.js",

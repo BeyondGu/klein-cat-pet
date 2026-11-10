@@ -4,9 +4,9 @@
 
 > 需要先安装 **DSH 桌面客户端（DeepSeek Harness）**。本项目是它的界面插件，不是独立程序，脱离 DSH 无法单独运行。
 
-![三态动效预览](docs/preview.gif)
+![三态动效预览](https://github.com/BeyondGu/klein-cat-pet/raw/main/docs/preview.gif)
 
-<sub>动图由 `tools/gif/` 从同一份 `lib/client.js` 逐帧渲染生成（非录屏）：336×425（实机 168×220 画面宽度的 2 倍）、20fps、三态各 0.9 秒一轮。静态图见 [docs/preview.png](docs/preview.png)。</sub>
+<sub>动图由 `tools/gif/` 从同一份 `lib/client.js` 逐帧渲染生成（非录屏）：336×425（实机 168×220 画面宽度的 2 倍）、20fps、三态各 0.9 秒一轮。静态图见 [docs/preview.png](https://github.com/BeyondGu/klein-cat-pet/raw/main/docs/preview.png)。</sub>
 
 > 粉丝向二创：礼帽、黄水晶、灰雾、甜冰茶等元素均为本项目手绘 SVG，不使用官方立绘。个人使用可以，公开发布/上架前请自行评估 IP 风险。
 
@@ -31,20 +31,30 @@
 
 ## 安装
 
-本项目是标准的 DSH 客户端插件包，无需安装依赖、无需构建。克隆后把它挂到任意 profile：
+本项目是标准的 DSH 客户端插件包：不需要 `npm install`，也没有构建步骤，下载下来就能用。
+
+### 方式一 · 下载 Release 包（不需要 Git）
+
+1. 打开 [最新 Release](https://github.com/BeyondGu/klein-cat-pet/releases/latest)，下载 `dsh-klein-cat-pet-X.Y.Z.zip`。
+2. 解压，得到一个 `dsh-klein-cat-pet` 文件夹（里面是 `lib/`、`package.json`、`cordis.patch.yml` 等）。
+3. 把**整个文件夹**放到 profile 的 `node_modules` 下：
+
+```text
+%USERPROFILE%\.dsh\profiles\<profile>\node_modules\dsh-klein-cat-pet
+```
+
+4. 重启 DSH 客户端（或刷新页面 `Ctrl+R`）。
+
+> `<profile>` 是你在 DSH 里用的那个 profile 目录名；打开 `%USERPROFILE%\.dsh\profiles\` 就能看到有哪些。
+
+### 方式二 · git clone + 插件命令
 
 ```powershell
 git clone https://github.com/BeyondGu/klein-cat-pet.git
 & "<DSH 安装目录>\resources\runtime\cli\bin\dsh.cmd" plugin --profile <profile> add "<克隆下来的仓库目录>"
 ```
 
-也可以手动放进去：
-
-```text
-%USERPROFILE%\.dsh\profiles\<profile>\node_modules\dsh-klein-cat-pet
-```
-
-安装后刷新页面（`Ctrl+R`）。宿主侧只插入一个空实现的 loader 行，宠物全部在浏览器端运行。
+两种方式效果相同，任选一条。装好后：界面右下角出现猫，侧边栏底部出现一个猫爪按钮；宿主侧只插入一个空实现的 loader 行，宠物全部在浏览器端渲染。
 
 > `desktop` profile 由 DSH 桌面应用独占管理，`dsh plugin --profile desktop ...` 会被拒绝；桌面端请在应用内的 **设置 → 插件** 里安装/卸载。上面的 CLI 只适用于非 desktop 的 profile。
 

@@ -3,17 +3,21 @@
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，
 版本号遵循 [SemVer](https://semver.org/lang/zh-CN/)。
 
-## [Unreleased]
+## [0.1.1] - 2026-11-10
 
 ### 新增
 
 - `docs/preview.gif`：三态动效预览，README 首图。
 - `tools/gif/`：把 CSS 动画冻结到指定 `currentTime` 逐帧截图再合成 GIF 的脚本（非录屏，可精确复现）。
+- README 新增「下载 Release 包」的安装路径（不需要 Git，也不用跑 `npm install`），并说明装好后该看到什么。
 
 ### 变更
 
 - 动图取景改为按实机 `.kc-pet` 尺寸固定裁框（原按内容并集裁边，不同帧构图会浮动）：336×425、实机画面 2 倍宽。
 - 动图帧率 10 → 20fps，调色板 72 → 96 色并关闭抖动，体积从 616 KB 降到 568 KB。
+- README 首图与静态图链接改为绝对 URL，解压后的分发包里也能正常显示（原相对链接在包内是断链）。
+
+## [Unreleased]
 
 ### 计划中（v0.2）
 
