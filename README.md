@@ -4,7 +4,9 @@
 
 > 需要先安装 **DSH 桌面客户端（DeepSeek Harness）**。本项目是它的界面插件，不是独立程序，脱离 DSH 无法单独运行。
 
-![三态预览](docs/preview.png)
+![三态动效预览](docs/preview.gif)
+
+<sub>动图由 `tools/gif/` 从同一份 `lib/client.js` 逐帧渲染生成（非录屏）；静态图见 [docs/preview.png](docs/preview.png)。</sub>
 
 > 粉丝向二创：礼帽、黄水晶、灰雾、甜冰茶等元素均为本项目手绘 SVG，不使用官方立绘。个人使用可以，公开发布/上架前请自行评估 IP 风险。
 
@@ -67,7 +69,9 @@ klein-cat-pet/
 │  └─ client.js           # 浏览器半：React + 内联 SVG + CSS 动画 + Web Audio
 ├─ tests/smoke.mjs        # 清单、补丁、状态机、apply 接线冒烟
 ├─ tools/preview.mjs      # 从 client.js 提取同一份画面，生成静态预览页
-├─ docs/preview.png       # 三态预览截图
+├─ tools/gif/             # 逐帧渲染三态动图的脚本（Python + Chrome headless）
+├─ docs/preview.png       # 三态静态预览截图
+├─ docs/preview.gif       # 三态动效预览（README 首图）
 ├─ .github/workflows/
 │  ├─ ci.yml              # push / PR 跑语法检查 + 冒烟 + 预览页
 │  └─ release.yml         # 打 v* tag 自动出 Release 与分发 zip
@@ -87,6 +91,19 @@ npm run verify    # 提交前跑这一条（check + test）
 ```
 
 `tools/preview.mjs` 会生成 `tools/preview.html`（已列入 `.gitignore`）；`docs/preview.png` 就是用它截图的。
+
+### 重新生成动图
+
+`docs/preview.gif` 不是录屏：脚本把每条 CSS 动画冻结在指定的 `currentTime` 上逐帧截图再合成，
+所以画面可精确复现、不会掉帧或启动抖动。
+
+```powershell
+node tools/gif/dump-art.mjs lib/client.js art.json
+python tools/gif/make_gif.py art.json docs/preview.gif
+```
+
+需要 Python 3 + `pip install pillow`，以及 Chrome（非默认路径用环境变量 `CHROME_PATH` 指定）。
+改了 `lib/client.js` 里的 SVG 或 CSS 之后重跑这两条即可。
 
 ## 版本与发布
 

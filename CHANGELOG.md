@@ -5,6 +5,11 @@
 
 ## [Unreleased]
 
+### 新增
+
+- `docs/preview.gif`：三态动效预览，README 首图。
+- `tools/gif/`：把 CSS 动画冻结到指定 `currentTime` 逐帧截图再合成 GIF 的脚本（非录屏，可精确复现）。
+
 ### 计划中（v0.2）
 
 - 联动「AI 是否正在生成」自动切换状态，不再只靠手动点击。
