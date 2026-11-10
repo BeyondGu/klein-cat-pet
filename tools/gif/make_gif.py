@@ -5,6 +5,11 @@
 currentTime，Chrome headless 截一帧，就得到任意时刻的精确画面；连续 t 采样即可还原动效。
 截图必须加 --run-all-compositor-stages-before-draw，否则会截到过期的合成帧（表现为每帧一样）。
 
+取景：按实机尺寸固定裁框（.kc-pet 168×219 再外扩 MARGIN_CSS 让辉光/粒子露出来），
+输出 2 倍宽即 336px，比例与桌面上那只猫一致，不会因不同帧内容多少而变化。
+
+帧率 20fps（GIF 延时以 10ms 为单位，50ms 正好整除，多数浏览器不会舍入走样）。
+
 用法（在仓库根目录执行）：
   node tools/gif/dump-art.mjs lib/client.js art.json
   python tools/gif/make_gif.py art.json docs/preview.gif
@@ -25,28 +30,34 @@ CHROME = os.environ.get("CHROME_PATH") or r"C:\Program Files\Google\Chrome\Appli
 if not Path(CHROME).exists():
     sys.exit(f"找不到 Chrome：{CHROME}\n请设置环境变量 CHROME_PATH 指向 chrome.exe")
 
-CANVAS_W, CANVAS_H = 260, 340      # 故意留大，之后按内容自动裁边
-SCALE = 2
+CANVAS_W, CANVAS_H = 260, 340      # 画布留大，给辉光/粒子溢出空间；取景框另行固定
+SCALE = 2                          # 设备像素比，先 2x 再缩，线条更干净
 STATES = ["work", "tired", "rest"]
-FPS = 10
-FRAMES_PER_STATE = 12              # 每态 1.2 秒，三态一轮 3.6 秒
-COLORS = 72
-BG = (18, 17, 24)
-PAD = 26                           # 裁边后留白（截图坐标系，即 2x）
-OUT_WIDTH = 300                    # 最终 GIF 宽度，太高会拖慢 README 加载
+FPS = 20                           # 50ms/帧，整除 GIF 的 10ms 延时单位
+FRAMES_PER_STATE = 18              # 每态 0.9 秒，三态一轮 2.7 秒
+COLORS = 96                        # 深色底渐变容易出色带，比 72 多留一些
+BG = (18, 17, 24)                  # DSH 深色面板色的近似值（实机是透明浮层，见 README 说明）
+DITHER = Image.NONE                # 开抖动（FLOYDSTEINBERG）体积会翻一倍多，96 色足够平滑
+OUT_WIDTH = 336                    # 实机 168px 宽的 2 倍
+# 实机尺寸（与 lib/client.js 一致）：宽 168，高 = .kc-top 30 + .kc-stage 189
+PET_W, PET_H = 168, 219
+MARGIN_CSS = 12                    # 取景框外扩，露出法阵/粒子/阴影
+LEFT = (CANVAS_W - PET_W) // 2
+TOP = (CANVAS_H - PET_H) // 2
 
 HTML_TMPL = """<!doctype html>
 <html lang="zh-CN"><head>
 <meta charset="utf-8">
 <style>
 html,body{{margin:0;padding:0;background:rgb{bg};overflow:hidden;width:{w}px;height:{h}px;}}
-body{{display:flex;align-items:center;justify-content:center;}}
+body{{position:relative;}}
 </style>
 <style>{css}</style>
 <style>
-/* 预览页专用：把插件里的绝对定位改回文档流；动画统一暂停，时刻由 JS 设定。
-   width 固定为设计尺寸，否则三态内容宽度不同会让 flex 居中把标签推来推去。 */
-.kc-pet{{position:relative!important;left:auto!important;top:auto!important;margin:0!important;width:168px!important}}
+/* 预览页专用：把插件里的 position:fixed 改成按固定坐标绝对定位，取景框因此可精确预测。
+   width 固定为设计尺寸，否则三态内容宽度不同会把标签推来推去。 */
+.kc-pet{{position:absolute!important;left:{left}px!important;top:{top}px!important;
+         margin:0!important;width:{petw}px!important}}
 *{{animation-play-state:paused!important}}
 </style>
 </head>
@@ -83,8 +94,8 @@ body{{display:flex;align-items:center;justify-content:center;}}
 
 def render_frame(png_path, state, t, art, css, labels, tmpdir, profile):
     html = HTML_TMPL.format(
-        w=CANVAS_W, h=CANVAS_H, bg=BG, css=css, state=state,
-        label=labels[state], art=art[state],
+        w=CANVAS_W, h=CANVAS_H, bg=BG, css=css, state=state, label=labels[state],
+        art=art[state], left=LEFT, top=TOP, petw=PET_W,
     )
     html_path = os.path.join(tmpdir, f"f_{state}_{t:.3f}.html")
     with open(html_path, "w", encoding="utf-8") as f:
@@ -112,24 +123,13 @@ def render_frame(png_path, state, t, art, css, labels, tmpdir, profile):
     )
 
 
-def union_bbox(imgs, bg):
-    """所有帧相对背景的非空区域并集，避免裁边时把某一帧的粒子/气泡切掉。"""
-    from PIL import ImageChops
-
-    left = top = 10 ** 9
-    right = bottom = -1
-    for im in imgs:
-        diff = ImageChops.difference(im, Image.new("RGB", im.size, bg))
-        bb = diff.getbbox()   # 与背景完全相同的像素为黑，getbbox 直接给出内容外框
-        if not bb:
-            continue
-        left = min(left, bb[0])
-        top = min(top, bb[1])
-        right = max(right, bb[2])
-        bottom = max(bottom, bb[3])
-    if right < 0:
-        return (0, 0, imgs[0].size[0], imgs[0].size[1])
-    return (left, top, right, bottom)
+def frame_box():
+    """固定取景框（截图坐标系 = 2x）：实机 .kc-pet 外扩 MARGIN_CSS。"""
+    m = MARGIN_CSS * SCALE
+    left, top = LEFT * SCALE, TOP * SCALE
+    return (max(0, left - m), max(0, top - m),
+            min(CANVAS_W * SCALE, (LEFT + PET_W) * SCALE + m),
+            min(CANVAS_H * SCALE, (TOP + PET_H) * SCALE + m))
 
 
 def main():
@@ -160,13 +160,11 @@ def main():
         if uniq <= len(STATES):
             raise RuntimeError("每态只有一帧不同：动画没被冻结到不同时刻")
 
-        box = union_bbox(imgs, BG)
-        box = (max(0, box[0] - PAD), max(0, box[1] - PAD),
-               min(size[0], box[2] + PAD), min(size[1], box[3] + PAD))
+        box = frame_box()
         print("crop box:", box)
         imgs = [im.crop(box) for im in imgs]
 
-        # 统一缩放到目标宽度（2x 画布缩一半左右，线条依然清楚）
+        # 缩到实机宽度的 2 倍（截图已是 2x，这里再微调到目标宽度）
         cw, ch = imgs[0].size
         tw = OUT_WIDTH
         th = int(round(ch * tw / cw))
@@ -180,7 +178,7 @@ def main():
         pal = montage.quantize(colors=COLORS, method=Image.MEDIANCUT)
         del montage
 
-        gif_frames = [im.quantize(palette=pal, dither=Image.FLOYDSTEINBERG) for im in imgs]
+        gif_frames = [im.quantize(palette=pal, dither=DITHER) for im in imgs]
         gif_frames[0].save(
             out_gif,
             format="GIF",

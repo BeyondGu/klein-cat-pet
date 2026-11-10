@@ -6,7 +6,7 @@
 
 ![三态动效预览](docs/preview.gif)
 
-<sub>动图由 `tools/gif/` 从同一份 `lib/client.js` 逐帧渲染生成（非录屏）；静态图见 [docs/preview.png](docs/preview.png)。</sub>
+<sub>动图由 `tools/gif/` 从同一份 `lib/client.js` 逐帧渲染生成（非录屏）：336×425（实机 168×220 画面宽度的 2 倍）、20fps、三态各 0.9 秒一轮。静态图见 [docs/preview.png](docs/preview.png)。</sub>
 
 > 粉丝向二创：礼帽、黄水晶、灰雾、甜冰茶等元素均为本项目手绘 SVG，不使用官方立绘。个人使用可以，公开发布/上架前请自行评估 IP 风险。
 
@@ -104,6 +104,12 @@ python tools/gif/make_gif.py art.json docs/preview.gif
 
 需要 Python 3 + `pip install pillow`，以及 Chrome（非默认路径用环境变量 `CHROME_PATH` 指定）。
 改了 `lib/client.js` 里的 SVG 或 CSS 之后重跑这两条即可。
+
+几个与实机对齐的取景约定：画面按实机 `.kc-pet`（168×219）固定裁框、外扩 12px 让法阵和阴影露出来，
+输出 2 倍宽 336px；帧率 20fps（50ms 正好整除 GIF 的 10ms 延时单位）；96 色调色板且不开抖动
+（开 Floyd–Steinberg 抖动体积会翻一倍多）。两处已知的失真：GIF 只有 1 位透明，软过渡的辉光放上去会碎，
+所以画面用深色面板底而不是透明底；另外每个状态只截前 0.9 秒，像眨眼（周期 6.4s）、法阵旋转（16/20s）
+这类长周期动画在动图里只走了开头一小段，实机上比动图更"活"。
 
 ## 版本与发布
 
