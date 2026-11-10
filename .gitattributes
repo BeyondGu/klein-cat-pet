@@ -1,0 +1,14 @@
+# 统一换行与二进制识别：避免 Windows/macOS 协作时出现整文件 diff，
+# 也避免 Git 把图片/音频当文本做换行转换而损坏内容。
+* text=auto
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.wav binary
+*.mp3 binary
+*.m4a binary
+*.zip binary
